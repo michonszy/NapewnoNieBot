@@ -1,0 +1,70 @@
+package gridwars.starter;
+
+import cern.ais.gridwars.api.Coordinates;
+import cern.ais.gridwars.api.UniverseView;
+import cern.ais.gridwars.api.bot.PlayerBot;
+import cern.ais.gridwars.api.command.MovementCommand;
+
+import java.util.List;
+
+
+/**
+ * Simple bot that only moves into one direction
+ */
+public class MovingBot implements PlayerBot {
+
+	@Override
+	public void getNextCommands(UniverseView universeView, List<MovementCommand> movementCommands) {
+		List<Coordinates> myCells = universeView.getMyCells();
+		int numerRundy = universeView.getCurrentTurn();
+		for (Coordinates cell : myCells) {
+			int currentPopulation = universeView.getPopulation(cell);
+
+			if (currentPopulation > (4.0 / (universeView.getGrowthRate() - 1))) {
+				int split = 1;
+
+				boolean czyBylLepszy = false;
+				// Check left, right, up, down for cells that don't belong to me
+				for (MovementCommand.Direction direction : MovementCommand.Direction.values()) {
+					if (!universeView.belongsToMe(cell.getNeighbour(direction))) {
+
+						if(universeView.isEmpty(cell.getNeighbour(direction))){
+							split++;
+						}else{
+							movementCommands.add(new MovementCommand(cell, direction, currentPopulation/split));
+							czyBylLepszy = true;
+							break;
+						}
+					}
+				}
+				if (czyBylLepszy == false){
+					int skok = currentPopulation / split;
+					if(numerRundy <=10){
+						skok=24;
+					}
+
+					if (skok + 5 > 1){
+						skok = skok + 5;
+					}else if (skok +4 >1 ){
+						skok = skok+4;
+					}else if (skok +3 >1 ){
+						skok = skok+3;
+					}else if (skok +2 >1 ){
+						skok = skok+2;
+					}else if (skok +1 >1 ){
+						skok = skok+1;
+					}
+
+
+					// Expand
+					for (MovementCommand.Direction direction : MovementCommand.Direction.values()) {
+						if (!universeView.belongsToMe(cell.getNeighbour(direction))) {
+							movementCommands.add(new MovementCommand(cell, direction, skok));
+						}
+					}
+				}
+
+			}
+		}
+	}
+}

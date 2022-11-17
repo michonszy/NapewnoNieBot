@@ -1,0 +1,39 @@
+package gridwars.starter;
+
+import cern.ais.gridwars.api.Coordinates;
+import cern.ais.gridwars.api.UniverseView;
+import cern.ais.gridwars.api.bot.PlayerBot;
+import cern.ais.gridwars.api.command.MovementCommand;
+
+import java.util.List;
+
+
+/**
+ * Simple bot that only moves into one direction
+ */
+public class MovingBot implements PlayerBot {
+
+
+
+	@Override
+	public void getNextCommands(UniverseView universeView, List<MovementCommand> movementCommands) {
+		List<Coordinates> myCells = universeView.getMyCells();
+
+		for (Coordinates cell : myCells) {
+			int population = universeView.getPopulation(cell);
+
+			if (population > (4.0 / (universeView.getGrowthRate() - 1))) {
+
+				MovementCommand movementCommand = new MovementCommand(cell, MovementCommand.Direction.RIGHT, population/4-5);
+				MovementCommand movementCommand2 = new MovementCommand(cell, MovementCommand.Direction.LEFT, population/4-5);
+				MovementCommand movementCommand3 = new MovementCommand(cell, MovementCommand.Direction.DOWN, population/4-5);
+				MovementCommand movementCommand4 = new MovementCommand(cell, MovementCommand.Direction.UP, population/4-5);
+				movementCommands.add(movementCommand);
+				movementCommands.add(movementCommand2);
+				movementCommands.add(movementCommand3);
+				movementCommands.add(movementCommand4);
+
+			}
+		}
+	}
+}
