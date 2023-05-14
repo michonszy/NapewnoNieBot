@@ -1,2 +1,3 @@
 # NapewnoNieBot
-No bot to to napewno nie jest
+
+GridWars Hackathon CERN 2022
